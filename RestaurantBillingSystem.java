@@ -25,9 +25,13 @@ class MenuItem implements Serializable {
 
 public class RestaurantBillingSystem {
     private ArrayList<MenuItem> menuItems;
+    private double discount;
+    private double taxRate;
 
     public RestaurantBillingSystem() {
         menuItems = new ArrayList<>();
+        discount = 0;
+        taxRate = 0;
     }
 
     public void addItem(String name, double price, int quantity) {
@@ -39,6 +43,8 @@ public class RestaurantBillingSystem {
         for (MenuItem item : menuItems) {
             total += item.getTotalPrice();
         }
+        total -= total * (discount / 100);
+        total += total * (taxRate / 100);
         return total;
     }
 
@@ -68,6 +74,14 @@ public class RestaurantBillingSystem {
         }
     }
 
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
+    public void setTaxRate(double taxRate) {
+        this.taxRate = taxRate;
+    }
+
     public static void main(String[] args) {
         RestaurantBillingSystem system = new RestaurantBillingSystem();
         Scanner scanner = new Scanner(System.in);
@@ -79,7 +93,9 @@ public class RestaurantBillingSystem {
             System.out.println("3. Calculate Total");
             System.out.println("4. Save Order");
             System.out.println("5. Load Order");
-            System.out.println("6. Exit");
+            System.out.println("6. Set Discount");
+            System.out.println("7. Set Tax Rate");
+            System.out.println("8. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
 
@@ -107,6 +123,16 @@ public class RestaurantBillingSystem {
                     system.loadOrder();
                     break;
                 case 6:
+                    System.out.print("Enter discount percentage: ");
+                    double discount = scanner.nextDouble();
+                    system.setDiscount(discount);
+                    break;
+                case 7:
+                    System.out.print("Enter tax rate percentage: ");
+                    double taxRate = scanner.nextDouble();
+                    system.setTaxRate(taxRate);
+                    break;
+                case 8:
                     System.out.println("Exiting...");
                     scanner.close();
                     System.exit(0);
