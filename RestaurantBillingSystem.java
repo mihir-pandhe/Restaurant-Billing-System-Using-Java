@@ -1,11 +1,13 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class MenuItem implements Serializable {
-    String name;
-    double price;
-    int quantity;
+    private static final long serialVersionUID = 1L;
+    private String name;
+    private double price;
+    private int quantity;
 
     MenuItem(String name, double price, int quantity) {
         this.name = name;
@@ -60,7 +62,7 @@ public class RestaurantBillingSystem {
             oos.writeObject(menuItems);
             System.out.println("Order saved successfully.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error saving order: " + e.getMessage());
         }
     }
 
@@ -70,7 +72,7 @@ public class RestaurantBillingSystem {
             menuItems = (ArrayList<MenuItem>) ois.readObject();
             System.out.println("Order loaded successfully.");
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Error loading order: " + e.getMessage());
         }
     }
 
@@ -97,16 +99,34 @@ public class RestaurantBillingSystem {
             System.out.println("7. Set Tax Rate");
             System.out.println("8. Exit");
             System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
+            int choice = -1;
+
+            try {
+                choice = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.next();
+                continue;
+            }
 
             switch (choice) {
                 case 1:
                     System.out.print("Enter item name: ");
-                    String name = scanner.next();
-                    System.out.print("Enter item price: ");
-                    double price = scanner.nextDouble();
-                    System.out.print("Enter item quantity: ");
-                    int quantity = scanner.nextInt();
+                    String name = scanner.nextLine();
+                    double price = -1;
+                    int quantity = -1;
+                    try {
+                        System.out.print("Enter item price: ");
+                        price = scanner.nextDouble();
+                        System.out.print("Enter item quantity: ");
+                        quantity = scanner.nextInt();
+                        scanner.nextLine();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Price and quantity should be numeric.");
+                        scanner.next();
+                        continue;
+                    }
                     system.addItem(name, price, quantity);
                     break;
                 case 2:
@@ -123,13 +143,29 @@ public class RestaurantBillingSystem {
                     system.loadOrder();
                     break;
                 case 6:
-                    System.out.print("Enter discount percentage: ");
-                    double discount = scanner.nextDouble();
+                    double discount = -1;
+                    try {
+                        System.out.print("Enter discount percentage: ");
+                        discount = scanner.nextDouble();
+                        scanner.nextLine();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Discount should be numeric.");
+                        scanner.next();
+                        continue;
+                    }
                     system.setDiscount(discount);
                     break;
                 case 7:
-                    System.out.print("Enter tax rate percentage: ");
-                    double taxRate = scanner.nextDouble();
+                    double taxRate = -1;
+                    try {
+                        System.out.print("Enter tax rate percentage: ");
+                        taxRate = scanner.nextDouble();
+                        scanner.nextLine();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Tax rate should be numeric.");
+                        scanner.next();
+                        continue;
+                    }
                     system.setTaxRate(taxRate);
                     break;
                 case 8:
